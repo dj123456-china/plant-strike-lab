@@ -1,0 +1,10 @@
+node_modules/
+dist/
+unpackage/
+output/
+.playwright-cli/
+.DS_Store
+**/.DS_Store
+*.zip
+.env
+**/.env

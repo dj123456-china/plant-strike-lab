@@ -1,0 +1,32 @@
+{
+  "name": "garden-guard-studio",
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/uni.mjs",
+    "dev:h5": "node scripts/uni.mjs",
+    "dev:mp-weixin": "node scripts/uni.mjs -p mp-weixin",
+    "build": "node scripts/uni.mjs build",
+    "build:h5": "node scripts/uni.mjs build",
+    "build:mp-weixin": "node scripts/uni.mjs build -p mp-weixin",
+    "build:app": "node scripts/uni.mjs build -p app",
+    "test": "node --test scripts/*.test.mjs"
+  },
+  "dependencies": {
+    "@dcloudio/uni-app": "3.0.0-5020620260917001",
+    "@dcloudio/uni-app-plus": "3.0.0-5020620260917001",
+    "@dcloudio/uni-components": "3.0.0-5020620260917001",
+    "@dcloudio/uni-h5": "3.0.0-5020620260917001",
+    "@dcloudio/uni-mp-weixin": "3.0.0-5020620260917001",
+    "vue": "3.4.21"
+  },
+  "devDependencies": {
+    "@dcloudio/types": "3.4.31",
+    "@dcloudio/vite-plugin-uni": "3.0.0-5020620260917001",
+    "@resvg/resvg-js": "^2.6.2",
+    "@vue/compiler-sfc": "3.4.21",
+    "lucide": "^0.544.0",
+    "vite": "5.2.8"
+  }
+}

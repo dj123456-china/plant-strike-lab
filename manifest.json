@@ -1,0 +1,37 @@
+{
+  "name": "植击实验室",
+  "appid": "",
+  "description": "自定义角色素材和攻击特效的草坪塔防游戏",
+  "versionName": "2.0.0",
+  "versionCode": "200",
+  "transformPx": false,
+  "vueVersion": "3",
+  "app-plus": {
+    "usingComponents": true,
+    "nvueStyleCompiler": "uni-app",
+    "compilerVersion": 3,
+    "splashscreen": {
+      "alwaysShowBeforeRender": true,
+      "waiting": true,
+      "autoclose": true,
+      "delay": 0
+    },
+    "modules": {}
+  },
+  "h5": {
+    "title": "植击实验室",
+    "router": {
+      "mode": "hash"
+    }
+  },
+  "mp-weixin": {
+    "appid": "",
+    "setting": {
+      "urlCheck": false
+    },
+    "usingComponents": true
+  },
+  "uniStatistics": {
+    "enable": false
+  }
+}

@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#13261f" />
+    <meta name="description" content="可上传角色素材并自定义攻击特效的原创塔防游戏原型" />
+    <link rel="icon" href="./default-plant.svg" type="image/svg+xml" />
+    <title>植击实验室</title>
+    <script defer src="./assets/app.js"></script>
+    <link rel="stylesheet" href="./assets/index.css">
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="植击实验室首页">
+          <span class="brand-mark"><i data-lucide="sprout"></i></span>
+          <span>
+            <strong>植击实验室</strong>
+            <small>自定义草坪防线</small>
+          </span>
+        </a>
+        <div class="top-actions">
+          <span class="save-state"><i data-lucide="cloud-check"></i> 自动保存</span>
+          <button class="icon-button" id="soundToggle" type="button" aria-label="关闭音效" title="音效">
+            <i data-lucide="volume-2"></i>
+          </button>
+          <button class="secondary-button compact" id="resetAll" type="button" aria-label="恢复全部默认设置">
+            <i data-lucide="rotate-ccw"></i><span>恢复默认</span>
+          </button>
+        </div>
+      </header>
+
+      <main class="studio-layout">
+        <aside class="panel asset-panel" aria-labelledby="assetTitle">
+          <div class="panel-heading">
+            <span class="section-icon"><i data-lucide="images"></i></span>
+            <div><h2 id="assetTitle">素材库</h2><p>每种植物单独换装</p></div>
+          </div>
+
+          <div class="asset-list">
+            <section class="asset-item" data-asset="plant">
+              <div class="asset-thumb checkerboard"><img id="plantPreview" src="./default-plant.svg" alt="植物素材预览" /></div>
+              <div class="asset-info"><strong id="selectedPlantName">豆荚射手</strong><span id="plantFileName">默认素材</span></div>
+              <button class="icon-button small upload-trigger" data-input="plantUpload" type="button" aria-label="上传植物图片" title="上传图片"><i data-lucide="upload"></i></button>
+              <button class="icon-button small reset-asset" data-kind="plant" type="button" aria-label="恢复默认植物" title="恢复默认"><i data-lucide="undo-2"></i></button>
+              <input id="plantUpload" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden />
+            </section>
+
+            <section class="asset-item" data-asset="zombie">
+              <div class="asset-thumb checkerboard"><img id="zombiePreview" src="./default-zombie.svg" alt="僵尸素材预览" /></div>
+              <div class="asset-info"><strong>入侵僵尸</strong><span id="zombieFileName">默认素材</span></div>
+              <button class="icon-button small upload-trigger" data-input="zombieUpload" type="button" aria-label="上传僵尸图片" title="上传图片"><i data-lucide="upload"></i></button>
+              <button class="icon-button small reset-asset" data-kind="zombie" type="button" aria-label="恢复默认僵尸" title="恢复默认"><i data-lucide="undo-2"></i></button>
+              <input id="zombieUpload" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden />
+            </section>
+          </div>
+
+          <div class="tool-divider"></div>
+          <p class="tool-label">当前植物档案</p>
+          <div class="plant-profile">
+            <div class="profile-art"><img id="profilePlantImage" src="./default-plant.svg" alt="豆荚射手" /></div>
+            <strong id="profilePlantName">豆荚射手</strong>
+            <span id="profilePlantStats">50 阳光 · 100 生命</span>
+            <p id="plantDescription">向本行僵尸发射弹体，伤害和特效可在攻击工坊调整。</p>
+          </div>
+          <p class="skin-hint">先选择草坪上方的植物卡，再上传图片。只替换这一种植物。</p>
+
+          <div class="asset-note">
+            <i data-lucide="info"></i>
+            <p>支持 PNG、JPG、WebP、GIF，单张不超过 5 MB。GIF 会使用首帧。</p>
+          </div>
+        </aside>
+
+        <section class="game-column" aria-labelledby="battleTitle">
+          <div class="battle-toolbar">
+            <div>
+              <p class="eyebrow">游戏模式</p>
+              <h1 id="battleTitle">无限模式</h1>
+            </div>
+            <div class="battle-stats">
+              <div class="stat sun-stat"><i data-lucide="sun-medium"></i><span id="sunCount">200</span></div>
+              <div class="stat"><i data-lucide="skull"></i><span id="killCount">0 / ∞</span></div>
+            </div>
+          </div>
+
+          <div class="seed-toolbar">
+            <p>选择植物 <span id="selectedPlantLabel">豆荚射手 · 50 阳光</span></p>
+            <button class="shovel-tool" id="shovelTool" type="button" aria-pressed="false"><i data-lucide="shovel"></i><span>铲除</span></button>
+          </div>
+          <div class="seed-bank" id="plantRoster" role="group" aria-label="选择种植的植物"></div>
+
+          <div class="wave-track" aria-label="无限模式进度"><span id="waveProgress"></span></div>
+
+          <div class="board-shell">
+            <div class="board" id="board">
+              <div class="yard-lines" aria-hidden="true"></div>
+              <div class="mower-layer" id="mowerLayer" aria-hidden="true"></div>
+              <div class="actor-layer" id="actorLayer"></div>
+              <div class="sun-layer" id="sunLayer"></div>
+              <div class="grid-layer" id="gridLayer" aria-label="5 行 9 列种植区域"></div>
+              <div class="board-state" id="boardState">
+                <div class="state-icon"><i data-lucide="mouse-pointer-click"></i></div>
+                <strong>布置你的防线</strong>
+                <span>选择植物，再点击草坪格子</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="game-controls">
+            <button class="primary-button" id="playButton" type="button"><i data-lucide="play"></i><span>开始游戏</span></button>
+            <button class="secondary-button" id="restartButton" type="button"><i data-lucide="refresh-cw"></i><span>重新布置</span></button>
+            <div class="event-message" id="eventMessage" role="status" aria-live="polite"><i data-lucide="crosshair"></i><span>准备完毕，先放置几株植物</span></div>
+          </div>
+        </section>
+
+        <aside class="panel effect-panel" aria-labelledby="effectTitle">
+          <div class="panel-heading">
+            <span class="section-icon"><i data-lucide="sparkles"></i></span>
+            <div><h2 id="effectTitle">攻击工坊</h2><p>三种射手共用 · 调整后生效</p></div>
+          </div>
+
+          <div class="effect-preview" aria-label="攻击特效预览">
+            <div class="preview-plant"><img id="effectPlantImage" src="./default-plant.svg" alt="植物" /></div>
+            <div class="preview-lane"><span></span></div>
+            <div class="preview-shot" id="previewShot"></div>
+            <div class="preview-target"><i data-lucide="crosshair"></i></div>
+          </div>
+
+          <fieldset class="control-group">
+            <legend>弹道类型</legend>
+            <div class="segmented" id="effectTypes">
+              <button type="button" class="active" data-effect="pea" aria-pressed="true"><i data-lucide="circle"></i><span>能量豆</span></button>
+              <button type="button" data-effect="fire" aria-pressed="false"><i data-lucide="flame"></i><span>火球</span></button>
+              <button type="button" data-effect="ice" aria-pressed="false"><i data-lucide="snowflake"></i><span>冰晶</span></button>
+              <button type="button" data-effect="bolt" aria-pressed="false"><i data-lucide="zap"></i><span>闪电</span></button>
+            </div>
+          </fieldset>
+
+          <fieldset class="control-group">
+            <legend>攻击特效资源库</legend>
+            <div class="effect-library" id="effectLibrary" role="group" aria-label="选择攻击特效资源">
+              <button type="button" class="effect-resource" data-resource="ppt" aria-pressed="false"><img src="./effect-ppt.svg" alt="" /><span>ppt</span></button>
+              <button type="button" class="effect-resource" data-resource="copy" aria-pressed="false"><img src="./effect-copy.svg" alt="" /><span>文案</span></button>
+              <button type="button" class="effect-resource" data-resource="poop" aria-pressed="false"><img src="./effect-poop.svg" alt="" /><span>大便</span></button>
+            </div>
+          </fieldset>
+
+          <div class="control-row color-row">
+            <label for="effectColor">特效颜色</label>
+            <div class="color-control"><input id="effectColor" type="color" value="#d7ff3f" /><output id="colorValue">#D7FF3F</output></div>
+          </div>
+
+          <div class="range-stack">
+            <label for="effectSize"><span>弹体大小</span><output id="sizeValue">18 px</output></label>
+            <input id="effectSize" type="range" min="10" max="34" value="18" />
+          </div>
+          <div class="range-stack">
+            <label for="effectSpeed"><span>飞行速度</span><output id="speedValue">中速</output></label>
+            <input id="effectSpeed" type="range" min="1" max="5" value="3" />
+          </div>
+          <div class="range-stack">
+            <label for="effectDamage"><span>攻击伤害</span><output id="damageValue">25</output></label>
+            <input id="effectDamage" type="range" min="10" max="60" step="5" value="25" />
+          </div>
+          <div class="range-stack">
+            <label for="effectInterval"><span>攻击间隔</span><output id="intervalValue">1.2 秒</output></label>
+            <input id="effectInterval" type="range" min="6" max="24" value="12" />
+          </div>
+
+          <div class="toggle-list">
+            <label class="toggle-row" for="trailToggle"><span><i data-lucide="waves"></i> 运动拖尾</span><input id="trailToggle" type="checkbox" checked /><span class="switch"></span></label>
+            <label class="toggle-row" for="glowToggle"><span><i data-lucide="sun"></i> 命中光效</span><input id="glowToggle" type="checkbox" checked /><span class="switch"></span></label>
+          </div>
+
+          <div class="custom-projectile">
+            <div class="custom-copy"><strong>自定义弹体图片</strong><span id="projectileFileName">未上传</span></div>
+            <button class="icon-button small upload-trigger" data-input="projectileUpload" type="button" aria-label="上传弹体图片" title="上传图片"><i data-lucide="image-plus"></i></button>
+            <button class="icon-button small reset-asset" data-kind="projectile" type="button" aria-label="移除弹体图片" title="移除图片"><i data-lucide="x"></i></button>
+            <input id="projectileUpload" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden />
+          </div>
+
+          <button class="text-button" id="resetEffect" type="button"><i data-lucide="rotate-ccw"></i> 重置特效参数</button>
+        </aside>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
